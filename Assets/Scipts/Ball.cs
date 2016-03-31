@@ -5,11 +5,16 @@ public class Ball : MonoBehaviour {
 
     public float velocity = 1.0f;
     public Vector3 direction;
+    public AudioClip bounceSound;
 
-	// Use this for initialization
-	void Start () {
+    private AudioSource source;
+    
+    // Use this for initialization
+    void Start () {
         direction = new Vector3(Random.Range(-1.0f, 1.0f), 0, Random.Range(-1.0f, 1.0f));
         direction.Normalize();
+
+        source = GetComponent<AudioSource>();
     }
 	
 	// Update is called once per frame
@@ -31,15 +36,21 @@ public class Ball : MonoBehaviour {
         return bouncedDireciton.normalized;
     }
 
+    void PlayBounceSound() {
+        source.PlayOneShot(bounceSound, 1.0f);
+    }
+
     void OnCollisionEnter(Collision collision) {
         if (collision.gameObject.tag == "Wall") {
             foreach (ContactPoint contact in collision.contacts) {
                 direction = Bounce(contact.normal);
+                PlayBounceSound();
             }
         }
         else if (collision.gameObject.tag == "Paddle") {
             foreach (ContactPoint contact in collision.contacts) {
                 direction = Bounce(contact.normal);
+                PlayBounceSound();
             }
         }
     }

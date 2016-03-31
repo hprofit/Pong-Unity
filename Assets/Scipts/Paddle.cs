@@ -10,10 +10,16 @@ public class Paddle : MonoBehaviour {
     public Vector3 direction;
     // Represents the state of the user's input, whether they have moved the paddle or not
     private bool isMoving = false;
+    // The paddle is permanently locked on the x and y axis
+    private Vector3 axis;
+    // The paddle is permanently locked to it's starting rotation
+    private Quaternion rotation;
 
 	// Use this for initialization
 	void Start () {
         direction = Vector3.zero;
+        axis = transform.position;
+        rotation = transform.rotation;
 	}
 	
 	// Update is called once per frame
@@ -21,6 +27,9 @@ public class Paddle : MonoBehaviour {
         // Move the paddle according to it's direction and velocity
         Vector3 deltaDirection = direction * velocity * Time.deltaTime;
         transform.Translate(deltaDirection);
+
+        transform.position = new Vector3(axis.x, axis.y, transform.position.z);
+        transform.rotation = rotation;
     }
 
     /// <summary>
@@ -96,6 +105,13 @@ public class Paddle : MonoBehaviour {
             else if (e.type == EventType.KeyUp) {
                 HandleKeyRelease(e);
             }
+        }
+    }
+
+    void OnCollisionEnter(Collision collision) {
+        if (collision.gameObject.tag == "Wall") {
+            StopMovement();
+            Debug.Log("Stop");
         }
     }
 }
